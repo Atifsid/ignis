@@ -1,0 +1,264 @@
+---
+import { Image } from "astro:assets";
+import { heroSlides } from "../data/site";
+---
+
+<section class="hero" aria-label="Introduction">
+  <div class="hero__sign">
+    <div class="hero__copy">
+      <h1>Fire protection, designed, installed and kept working.</h1>
+      <p>
+        Ignis designs, installs, audits and maintains fire fighting, suppression and alarm systems for buildings and
+        plants across India.
+      </p>
+      <div class="hero__actions">
+        <a class="btn btn--white" href="/contact">Book a site audit</a>
+        <a class="btn btn--line" href="/services">See our services</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero__media" data-slider aria-roledescription="carousel" aria-label="Our work">
+    {
+      heroSlides.map((slide, i) => (
+        <figure class:list={["hero__slide", { "is-active": i === 0 }]} aria-hidden={i === 0 ? "false" : "true"}>
+          <Image
+            src={slide.image}
+            alt={slide.caption}
+            widths={[640, 960, 1280]}
+            sizes="(min-width: 960px) 58vw, 100vw"
+            loading={i === 0 ? "eager" : "lazy"}
+            fetchpriority={i === 0 ? "high" : "auto"}
+          />
+        </figure>
+      ))
+    }
+    <div class="hero__bar">
+      <p class="hero__caption" aria-live="polite" data-caption>{heroSlides[0].caption}</p>
+      <div class="hero__controls">
+        {
+          heroSlides.map((slide, i) => (
+            <button
+              type="button"
+              class:list={["hero__dot", { "is-active": i === 0 }]}
+              data-dot={i}
+              aria-label={`Show ${slide.caption}`}
+              aria-pressed={i === 0 ? "true" : "false"}
+            />
+          ))
+        }
+        <button type="button" class="hero__pause" data-pause aria-label="Pause slideshow">
+          <i class="ri-pause-fill" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const slider = document.querySelector<HTMLElement>("[data-slider]");
+  if (slider) {
+    const slides = [...slider.querySelectorAll<HTMLElement>(".hero__slide")];
+    const dots = [...slider.querySelectorAll<HTMLButtonElement>("[data-dot]")];
+    const caption = slider.querySelector<HTMLElement>("[data-caption]")!;
+    const pause = slider.querySelector<HTMLButtonElement>("[data-pause]")!;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let current = 0;
+    let timer: number | undefined;
+    let playing = !reduced;
+
+    const show = (i: number) => {
+      current = (i + slides.length) % slides.length;
+      slides.forEach((s, n) => {
+        s.classList.toggle("is-active", n === current);
+        s.setAttribute("aria-hidden", String(n !== current));
+      });
+      dots.forEach((d, n) => {
+        d.classList.toggle("is-active", n === current);
+        d.setAttribute("aria-pressed", String(n === current));
+      });
+      caption.textContent = slides[current].querySelector("img")!.alt;
+    };
+
+    const stop = () => window.clearInterval(timer);
+    const start = () => {
+      stop();
+      if (playing) timer = window.setInterval(() => show(current + 1), 6000);
+    };
+    const setPlaying = (value: boolean) => {
+      playing = value;
+      pause.setAttribute("aria-label", playing ? "Pause slideshow" : "Play slideshow");
+      pause.querySelector("i")!.className = playing ? "ri-pause-fill" : "ri-play-fill";
+      start();
+    };
+
+    dots.forEach((d) =>
+      d.addEventListener("click", () => {
+        show(Number(d.dataset.dot));
+        start();
+      }),
+    );
+    pause.addEventListener("click", () => setPlaying(!playing));
+    slider.addEventListener("mouseenter", stop);
+    slider.addEventListener("mouseleave", start);
+    slider.addEventListener("focusin", stop);
+    slider.addEventListener("focusout", start);
+    setPlaying(playing);
+  }
+</script>
+
+<style>
+  .hero {
+    display: grid;
+    background: var(--ink);
+  }
+  @media (min-width: 960px) {
+    .hero {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      min-height: min(44rem, calc(100svh - 7.25rem));
+    }
+  }
+
+  .hero__sign {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--red);
+    color: var(--white);
+    padding: clamp(3rem, 2rem + 4vw, 5rem) calc(var(--gutter) + 1.5rem);
+  }
+  /* The white inset rule of a fire-equipment sign */
+  .hero__sign::before {
+    content: "";
+    position: absolute;
+    inset: 0.9rem;
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    border-radius: 6px;
+    pointer-events: none;
+  }
+  @media (min-width: 960px) {
+    .hero__sign {
+      justify-content: flex-end;
+      padding-left: max(var(--gutter), calc((100vw - var(--wrap)) / 2 + var(--gutter)));
+      padding-right: 3rem;
+    }
+  }
+  .hero__copy {
+    position: relative;
+    max-width: 34rem;
+  }
+  .hero h1 {
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+  .hero p {
+    max-width: 30em;
+    font-size: var(--t-lead);
+    line-height: 1.5;
+    color: #ffe3e3;
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .hero__media {
+    position: relative;
+    min-height: 20rem;
+    overflow: hidden;
+    background: var(--ink);
+  }
+  .hero__slide {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    transition: opacity 0.9s ease;
+  }
+  .hero__slide.is-active {
+    opacity: 1;
+  }
+  .hero__slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hero__slide.is-active img {
+    animation: settle 7s ease-out both;
+  }
+  @keyframes settle {
+    from {
+      transform: scale(1.06);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+
+  .hero__bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    /* Right padding keeps the controls clear of the floating WhatsApp button */
+    padding: 2.5rem 5.5rem 1.1rem var(--gutter);
+    background: linear-gradient(to top, rgba(29, 34, 38, 0.85), transparent);
+    color: var(--white);
+  }
+  .hero__caption {
+    font-size: var(--t-small);
+    font-weight: 600;
+  }
+  @media (max-width: 600px) {
+    .hero__caption {
+      display: none;
+    }
+  }
+  .hero__controls {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .hero__dot {
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+  .hero__dot::before {
+    content: "";
+    display: block;
+    width: 1.75rem;
+    height: 3px;
+    margin-inline: auto;
+    background: rgba(255, 255, 255, 0.45);
+    transition: background-color 0.2s ease;
+  }
+  .hero__dot.is-active::before,
+  .hero__dot:hover::before {
+    background: var(--white);
+  }
+  .hero__pause {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--white);
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+  .hero__pause:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+</style>

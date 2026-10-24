@@ -1,0 +1,24 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageBanner from "../../components/PageBanner.astro";
+import ServiceGrid from "../../components/ServiceGrid.astro";
+import Process from "../../components/Process.astro";
+import Industries from "../../components/Industries.astro";
+---
+
+<Base
+  title="Services"
+  description="Fire fighting, fire suppression and fire alarm systems, extinguisher refilling and hydro testing, annual maintenance, and fire safety training and audits."
+>
+  <PageBanner
+    title="Services"
+    intro="Six services that cover a fire protection system from the first drawing to years of upkeep. Choose one to see the systems we design and install."
+  />
+  <section class="section section--concrete">
+    <div class="wrap">
+      <ServiceGrid />
+    </div>
+  </section>
+  <Process />
+  <Industries />
+</Base>

@@ -1,0 +1,81 @@
+---
+import { process } from "../data/site";
+---
+
+<section class="process section" id="how-we-work">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>From first drawing to the tenth annual service</h2>
+      <p class="lead">
+        Take us on for one stage or all four. Each one is handled by the same team, so nothing gets lost between the
+        designer, the installer and the people who maintain it.
+      </p>
+    </div>
+    <ol class="process__steps">
+      {
+        process.map((step, i) => (
+          <li>
+            <span class="process__num" aria-hidden="true">{i + 1}</span>
+            <h3>{step.name}</h3>
+            <p>{step.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .process {
+    background: var(--ink);
+    color: var(--white);
+  }
+  .process .lead {
+    color: #b9c0c6;
+  }
+  .process__steps {
+    display: grid;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+  }
+  @media (min-width: 640px) {
+    .process__steps {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1000px) {
+    .process__steps {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+    }
+    .process__steps li {
+      padding-right: 2rem;
+    }
+  }
+  .process__steps li {
+    position: relative;
+    padding-top: 1.25rem;
+    border-top: 2px solid #3a4248;
+  }
+  .process__steps li:first-child {
+    border-top-color: var(--red);
+  }
+  .process__num {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-size: 2.75rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--red);
+  }
+  .process h3 {
+    margin-bottom: 0.5rem;
+  }
+  .process p {
+    color: #b9c0c6;
+    max-width: 22em;
+  }
+</style>

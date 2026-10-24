@@ -1,0 +1,69 @@
+---
+import { industries } from "../data/site";
+---
+
+<section class="section section--concrete" id="industries">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Where we work</h2>
+      <p class="lead">
+        Every building type has its own fire risk and its own code. We design for the one you're actually running.
+      </p>
+    </div>
+    <ul class="industries">
+      {
+        industries.map((item) => (
+          <li>
+            <span class="industries__icon">
+              <i class={item.icon} aria-hidden="true" />
+            </span>
+            {item.name}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .industries {
+    display: grid;
+    gap: 1px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+  @media (min-width: 600px) {
+    .industries {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 960px) {
+    .industries {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .industries li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.25rem;
+    background: var(--white);
+    font-weight: 650;
+    font-size: 1.05rem;
+    line-height: 1.3;
+  }
+  .industries__icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: var(--radius);
+    background: var(--red);
+    color: var(--white);
+    font-size: 1.35rem;
+  }
+</style>

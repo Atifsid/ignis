@@ -1,0 +1,172 @@
+---
+import { Image } from "astro:assets";
+import Base from "../layouts/Base.astro";
+import PageBanner from "../components/PageBanner.astro";
+import Process from "../components/Process.astro";
+import Industries from "../components/Industries.astro";
+import { capabilities, company } from "../data/site";
+import pumpSkid from "../assets/img/pump-skid.jpg";
+---
+
+<Base
+  title="Company"
+  description="Ignis & Electrical Protection LLP is a fire and electrical protection design consultancy, safety auditor and service provider based in New Delhi."
+>
+  <PageBanner title="About Ignis" intro={company.tagline} />
+
+  <section class="section">
+    <div class="wrap profile">
+      <div class="profile__media">
+        <Image src={pumpSkid} alt="Skid-mounted fire pump set with control panels" widths={[480, 820]} sizes="(min-width: 900px) 30rem, 100vw" />
+      </div>
+      <div class="profile__text">
+        <h2>Fire and electrical protection, from consultancy to upkeep</h2>
+        <p class="lead">{company.about}</p>
+        <p>
+          We design and develop protection systems, carry out safety audits and training, support projects as
+          management consultants, execute turnkey installations and look after fire systems through annual
+          maintenance.
+        </p>
+        <p>
+          Because one team handles every stage, the people who maintain your system understand why it was designed the
+          way it was, and the designers hear what goes wrong on site.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--concrete">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>What we do</h2>
+        <p class="lead">Hire us for a single audit or the full project. These are the roles we take on.</p>
+      </div>
+      <ul class="roles">
+        {
+          capabilities.map((c) => (
+            <li>
+              <i class={c.icon} aria-hidden="true" />
+              <div>
+                <h3>{c.title}</h3>
+                <p>{c.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <Process />
+  <Industries />
+
+  <section class="section">
+    <div class="wrap office">
+      <div>
+        <h2>Our office</h2>
+        <p class="lead">We work out of New Delhi and take on projects across India.</p>
+      </div>
+      <address>
+        <strong>{company.name}</strong>
+        {company.address.map((line) => <span>{line}</span>)}
+      </address>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .profile {
+    display: grid;
+    gap: 2.5rem 4rem;
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .profile {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    }
+  }
+  .profile__media {
+    position: relative;
+  }
+  .profile__media img {
+    width: 100%;
+    border-radius: var(--radius);
+  }
+  .profile__media::after {
+    content: "";
+    position: absolute;
+    left: -0.75rem;
+    bottom: -0.75rem;
+    width: 40%;
+    height: 40%;
+    z-index: -1;
+    background: var(--red);
+    border-radius: var(--radius);
+  }
+  .profile__text {
+    display: grid;
+    gap: 1.25rem;
+  }
+  .profile__text p:not(.lead) {
+    max-width: 38em;
+  }
+
+  .roles {
+    display: grid;
+    gap: 1px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+  @media (min-width: 760px) {
+    .roles {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1100px) {
+    .roles {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .roles li {
+    display: flex;
+    gap: 1rem;
+    padding: 1.75rem 1.5rem;
+    background: var(--white);
+  }
+  .roles i {
+    font-size: 1.75rem;
+    line-height: 1;
+    color: var(--red);
+  }
+  .roles h3 {
+    margin-bottom: 0.35rem;
+    font-size: var(--t-h4);
+    font-weight: 700;
+  }
+  .roles p {
+    color: var(--steel);
+  }
+
+  .office {
+    display: grid;
+    gap: 1.5rem 4rem;
+    align-items: end;
+  }
+  @media (min-width: 900px) {
+    .office {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .office h2 {
+    margin-bottom: 1rem;
+  }
+  .office address {
+    display: grid;
+    font-style: normal;
+    font-size: var(--t-lead);
+    line-height: 1.5;
+  }
+</style>

@@ -1,0 +1,227 @@
+---
+import { company, services, tel } from "../data/site";
+
+const year = new Date().getFullYear();
+---
+
+<section class="cta">
+  <div class="wrap cta__inner">
+    <div>
+      <h2>Not sure your building would pass a fire inspection?</h2>
+      <p>Book a site audit. We inspect your fire and electrical protection and give you a written list of what to fix, in order of risk.</p>
+    </div>
+    <div class="cta__actions">
+      <a class="btn btn--white" href="/contact">Book a site audit</a>
+      <a class="btn btn--line" href={tel(company.phones[0])}><i class="ri-phone-fill" aria-hidden="true"></i>{company.phones[0]}</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap footer__grid">
+    <div class="footer__about">
+      <a class="footer__brand" href="/">
+        <img src="/logo.svg" alt="" width="60" height="30" />
+        <span>{company.name}</span>
+      </a>
+      <p>{company.about}</p>
+    </div>
+
+    <nav aria-label="Services">
+      <h3>Services</h3>
+      <ul>
+        {services.map((s) => <li><a href={`/services/${s.slug}`}>{s.name}</a></li>)}
+      </ul>
+    </nav>
+
+    <nav aria-label="Company">
+      <h3>Company</h3>
+      <ul>
+        <li><a href="/about">About Ignis</a></li>
+        <li><a href="/about#how-we-work">How we work</a></li>
+        <li><a href="/#industries">Industries</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div>
+      <h3>Contact</h3>
+      <address>
+        {company.address.map((line) => <span>{line}</span>)}
+      </address>
+      <ul class="footer__contact">
+        {
+          company.phones.map((p) => (
+            <li>
+              <i class="ri-phone-line" aria-hidden="true" />
+              <a href={tel(p)}>{p}</a>
+            </li>
+          ))
+        }
+        <li><i class="ri-mail-line" aria-hidden="true"></i><a href={`mailto:${company.email}`}>{company.email}</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="wrap footer__base">
+    <p>© {year} {company.name}. All rights reserved.</p>
+    <p>Designed &amp; developed by <a href="https://github.com/Atifsid" target="_blank" rel="noopener">Atif Siddiqui</a></p>
+  </div>
+</footer>
+
+{
+  company.whatsapp && (
+    <a
+      class="whatsapp"
+      href={`https://wa.me/${company.whatsapp}?text=${encodeURIComponent("Hello Ignis, I'd like to discuss fire protection for my site.")}`}
+      target="_blank"
+      rel="noopener"
+    >
+      <i class="ri-whatsapp-fill" aria-hidden="true" />
+      <span class="visually-hidden">Chat with us on WhatsApp</span>
+    </a>
+  )
+}
+
+<style>
+  .cta {
+    background: var(--red);
+    color: var(--white);
+    padding-block: clamp(3rem, 2rem + 4vw, 5rem);
+  }
+  .cta__inner {
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+  }
+  .cta h2 {
+    max-width: 16em;
+    margin-bottom: 1rem;
+  }
+  .cta p {
+    max-width: 36em;
+    font-size: var(--t-lead);
+    line-height: 1.5;
+    color: #ffe3e3;
+  }
+  .cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  @media (min-width: 960px) {
+    .cta__inner {
+      grid-template-columns: 1fr auto;
+      gap: 4rem;
+    }
+    .cta__actions {
+      flex-direction: column;
+    }
+  }
+
+  .footer {
+    background: var(--ink);
+    color: #c9ced2;
+    font-size: 0.95rem;
+  }
+  .footer__grid {
+    display: grid;
+    gap: 2.5rem;
+    padding-block: 4rem 3rem;
+  }
+  @media (min-width: 700px) {
+    .footer__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (min-width: 1000px) {
+    .footer__grid {
+      grid-template-columns: 1.6fr 1fr 0.8fr 1.1fr;
+      gap: 3rem;
+    }
+  }
+  .footer__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+    color: var(--white);
+    font-weight: 750;
+    font-size: 1.15rem;
+    text-decoration: none;
+  }
+  .footer__brand img {
+    width: 60px;
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 4px;
+  }
+  .footer__about p {
+    max-width: 30em;
+  }
+  .footer h3 {
+    margin-bottom: 1rem;
+    color: var(--white);
+    font-size: 1.125rem;
+    font-weight: 700;
+  }
+  .footer ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .footer li {
+    padding-block: 0.2rem;
+  }
+  .footer a {
+    text-decoration: none;
+  }
+  .footer a:hover {
+    color: var(--white);
+    text-decoration: underline;
+  }
+  .footer address {
+    display: grid;
+    margin-bottom: 1rem;
+    font-style: normal;
+  }
+  .footer__contact li {
+    display: flex;
+    gap: 0.5rem;
+    overflow-wrap: anywhere;
+  }
+  .footer__contact i {
+    color: #ff6b6b;
+  }
+  .footer__base {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    padding-block: 1.5rem;
+    border-top: 1px solid #343b41;
+    font-size: var(--t-small);
+    color: #8f989f;
+  }
+
+  .whatsapp {
+    position: fixed;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    z-index: 40;
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background: #1f9d55;
+    color: var(--white);
+    font-size: 1.85rem;
+    text-decoration: none;
+    box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.4);
+    transition: transform 0.15s ease;
+  }
+  .whatsapp:hover {
+    transform: scale(1.06);
+  }
+</style>

@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/pages/services/[slug].astro"
+        ],
+        "createdAt": "2026-10-24T09:44:26.103Z",
+        "reason": "Claude: border-left is the current-page indicator on a vertical service nav rail (aria-current), not a card accent"
+      }
+    ]
+  }
+}

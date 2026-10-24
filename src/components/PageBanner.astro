@@ -1,0 +1,63 @@
+---
+interface Props {
+  title: string;
+  intro?: string;
+  crumbs?: { label: string; href: string }[];
+}
+
+const { title, intro, crumbs = [] } = Astro.props;
+---
+
+<section class="banner">
+  <div class="wrap">
+    <nav aria-label="Breadcrumb">
+      <ol class="crumbs">
+        <li><a href="/">Home</a></li>
+        {crumbs.map((c) => <li><a href={c.href}>{c.label}</a></li>)}
+        <li aria-current="page">{title}</li>
+      </ol>
+    </nav>
+    <h1>{title}</h1>
+    {intro && <p>{intro}</p>}
+  </div>
+</section>
+
+<style>
+  .banner {
+    background: var(--red);
+    color: var(--white);
+    padding-block: clamp(2.5rem, 2rem + 3vw, 4.5rem);
+  }
+  .crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 0 1.25rem;
+    padding: 0;
+    list-style: none;
+    font-size: var(--t-small);
+    color: #ffd0d0;
+  }
+  .crumbs li + li::before {
+    content: "/";
+    padding-inline: 0.5rem;
+    opacity: 0.7;
+  }
+  .crumbs a {
+    text-decoration: none;
+  }
+  .crumbs a:hover {
+    color: var(--white);
+    text-decoration: underline;
+  }
+  .banner h1 {
+    font-size: clamp(2rem, 1.4rem + 2.2vw, 3.25rem);
+    max-width: 18em;
+  }
+  .banner p {
+    max-width: 38em;
+    margin-top: 1rem;
+    font-size: var(--t-lead);
+    line-height: 1.5;
+    color: #ffe3e3;
+  }
+</style>

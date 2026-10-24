@@ -1,0 +1,123 @@
+---
+import { Image } from "astro:assets";
+import { services } from "../data/site";
+---
+
+<ul class="services">
+  {
+    services.map((s) => (
+      <li class="service">
+        <a href={`/services/${s.slug}`} class="service__link">
+          <div class:list={["service__media", { "service__media--contain": s.imageFit === "contain" }]}>
+            <Image src={s.image} alt="" widths={[400, 720]} sizes="(min-width: 1000px) 24rem, (min-width: 640px) 50vw, 100vw" />
+          </div>
+          <div class="service__body">
+            <h3>{s.name}</h3>
+            <p>{s.short}</p>
+            <ul class="service__systems">
+              {s.systems.slice(0, 3).map((sys) => (
+                <li>{sys.name}</li>
+              ))}
+            </ul>
+            <span class="service__more">
+              View systems <i class="ri-arrow-right-line" aria-hidden="true" />
+            </span>
+          </div>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .services {
+    display: grid;
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 640px) {
+    .services {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1000px) {
+    .services {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .service__link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    overflow: hidden;
+    text-decoration: none;
+    transition: border-color 0.2s ease;
+  }
+  .service__link:hover {
+    border-color: var(--red);
+  }
+  .service__media {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: var(--concrete);
+    border-bottom: 4px solid var(--red);
+  }
+  .service__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  .service__media--contain {
+    background: var(--white);
+  }
+  .service__media--contain img {
+    object-fit: contain;
+    padding: 1rem;
+  }
+  .service__link:hover .service__media img {
+    transform: scale(1.04);
+  }
+  .service__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 1.5rem 1.5rem 1.4rem;
+  }
+  .service h3 {
+    margin-bottom: 0.6rem;
+  }
+  .service p {
+    color: var(--steel);
+  }
+  .service__systems {
+    margin: 1rem 0 1.25rem;
+    padding: 0;
+    list-style: none;
+    font-size: 0.95rem;
+  }
+  .service__systems li {
+    padding: 0.4rem 0;
+    border-top: 1px solid var(--rule);
+  }
+  .service__more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: auto;
+    font-weight: 650;
+    color: var(--red);
+  }
+  .service__more i {
+    transition: transform 0.2s ease;
+  }
+  .service__link:hover .service__more i {
+    transform: translateX(3px);
+  }
+</style>

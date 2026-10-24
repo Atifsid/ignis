@@ -1,0 +1,323 @@
+---
+import Base from "../layouts/Base.astro";
+import PageBanner from "../components/PageBanner.astro";
+import { company, services, tel } from "../data/site";
+
+const mapQuery = encodeURIComponent(company.address.join(", "));
+---
+
+<Base
+  title="Contact"
+  description="Contact Ignis & Electrical Protection LLP for fire protection design, installation, audits and maintenance. Call, email or send an enquiry."
+>
+  <PageBanner
+    title="Contact us"
+    intro="Tell us about your site and what you need. We usually reply within one working day."
+  />
+
+  <section class="section">
+    <div class="wrap contact">
+      <form class="form" data-form data-endpoint={company.formEndpoint} data-email={company.email} novalidate>
+        <h2>Send an enquiry</h2>
+
+        <div class="form__row">
+          <label>
+            <span>Name</span>
+            <input name="name" type="text" autocomplete="name" required minlength="2" maxlength="150" />
+          </label>
+          <label>
+            <span>Company <em>(optional)</em></span>
+            <input name="company" type="text" autocomplete="organization" maxlength="150" />
+          </label>
+        </div>
+
+        <div class="form__row">
+          <label>
+            <span>Email</span>
+            <input name="email" type="email" autocomplete="email" required />
+          </label>
+          <label>
+            <span>Phone</span>
+            <input name="phone" type="tel" autocomplete="tel" required minlength="10" />
+          </label>
+        </div>
+
+        <div class="form__row">
+          <label>
+            <span>City</span>
+            <input name="city" type="text" autocomplete="address-level2" required />
+          </label>
+          <label>
+            <span>Service</span>
+            <select name="service" data-service>
+              <option value="">Not sure yet</option>
+              {services.map((s) => <option value={s.name}>{s.name}</option>)}
+            </select>
+          </label>
+        </div>
+
+        <label>
+          <span>Message</span>
+          <textarea name="message" rows="6" required minlength="10" maxlength="1000"
+            placeholder="Building type, size, and what you need: a new system, an audit, maintenance…"></textarea>
+        </label>
+
+        <div class="form__foot">
+          <button class="btn btn--red" type="submit">Send enquiry</button>
+          <p class="form__status" role="status" data-status></p>
+        </div>
+      </form>
+
+      <aside class="details">
+        <h2>Reach us directly</h2>
+        <ul>
+          {
+            company.phones.map((p) => (
+              <li>
+                <i class="ri-phone-line" aria-hidden="true" />
+                <div>
+                  <span>Phone</span>
+                  <a href={tel(p)}>{p}</a>
+                </div>
+              </li>
+            ))
+          }
+          <li>
+            <i class="ri-mail-line" aria-hidden="true"></i>
+            <div>
+              <span>Email</span>
+              <a href={`mailto:${company.email}`}>{company.email}</a>
+            </div>
+          </li>
+          <li>
+            <i class="ri-map-pin-line" aria-hidden="true"></i>
+            <div>
+              <span>Office</span>
+              <address>{company.address.join(", ")}</address>
+            </div>
+          </li>
+        </ul>
+        <iframe
+          title="Map showing the Ignis office in Trilokpuri, New Delhi"
+          src={`https://www.google.com/maps?q=${mapQuery}&output=embed`}
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </aside>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>("[data-form]");
+  if (form) {
+    const status = form.querySelector<HTMLElement>("[data-status]")!;
+    const button = form.querySelector<HTMLButtonElement>("button[type=submit]")!;
+
+    const preset = new URLSearchParams(location.search).get("service");
+    const select = form.querySelector<HTMLSelectElement>("[data-service]")!;
+    if (preset && [...select.options].some((o) => o.value === preset)) select.value = preset;
+
+    const messages: Record<string, string> = {
+      name: "Enter your name.",
+      email: "Enter an email address like name@company.com.",
+      phone: "Enter a phone number with at least 10 digits.",
+      city: "Enter the city your site is in.",
+      message: "Tell us a little about what you need (at least 10 characters).",
+    };
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      form.querySelectorAll("[aria-invalid]").forEach((el) => el.removeAttribute("aria-invalid"));
+      const invalid = [...form.querySelectorAll<HTMLInputElement>("input, textarea")].filter((el) => !el.checkValidity());
+      if (invalid.length) {
+        invalid.forEach((el) => el.setAttribute("aria-invalid", "true"));
+        status.dataset.state = "error";
+        status.textContent = messages[invalid[0].name] ?? "Check the highlighted fields.";
+        invalid[0].focus();
+        return;
+      }
+
+      const data = Object.fromEntries(new FormData(form)) as Record<string, string>;
+      const endpoint = form.dataset.endpoint;
+
+      if (!endpoint) {
+        const details = [
+          `Name: ${data.name}`,
+          data.company ? `Company: ${data.company}` : null,
+          `Email: ${data.email}`,
+          `Phone: ${data.phone}`,
+          `City: ${data.city}`,
+          `Service: ${data.service || "Not sure yet"}`,
+        ].filter(Boolean);
+        const body = `${details.join("\n")}\n\n${data.message}`;
+        const subject = `Enquiry from ${data.name}${data.service ? ` about ${data.service}` : ""}`;
+        location.href = `mailto:${form.dataset.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        status.dataset.state = "ok";
+        status.textContent = "Your email app should open with the enquiry filled in. Press send there to reach us.";
+        return;
+      }
+
+      button.disabled = true;
+      status.dataset.state = "";
+      status.textContent = "Sending…";
+      try {
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(data),
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        form.reset();
+        status.dataset.state = "ok";
+        status.textContent = "Enquiry sent. We'll reply within one working day.";
+      } catch {
+        status.dataset.state = "error";
+        status.textContent = `The enquiry didn't send. Try again, or email us at ${form.dataset.email}.`;
+      } finally {
+        button.disabled = false;
+      }
+    });
+  }
+</script>
+
+<style>
+  .contact {
+    display: grid;
+    gap: 3rem;
+  }
+  @media (min-width: 1000px) {
+    .contact {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+      gap: 4rem;
+      align-items: start;
+    }
+  }
+  .contact h2 {
+    margin-bottom: 1.5rem;
+    font-size: var(--t-h3);
+  }
+
+  .form {
+    display: grid;
+    gap: 1.25rem;
+  }
+  .form__row {
+    display: grid;
+    gap: 1.25rem;
+  }
+  @media (min-width: 640px) {
+    .form__row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .form label {
+    display: grid;
+    gap: 0.4rem;
+  }
+  .form label > span {
+    font-weight: 650;
+    font-size: 0.95rem;
+  }
+  .form em {
+    font-style: normal;
+    font-weight: 400;
+    color: var(--steel);
+  }
+  .form input,
+  .form select,
+  .form textarea {
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid #b4bbc1;
+    border-radius: var(--radius);
+    background: var(--white);
+    color: var(--ink);
+    font: inherit;
+    font-size: 1rem;
+  }
+  .form textarea {
+    resize: vertical;
+  }
+  .form input:focus,
+  .form select:focus,
+  .form textarea:focus {
+    outline: 2px solid var(--red);
+    outline-offset: 0;
+    border-color: var(--red);
+  }
+  .form [aria-invalid="true"] {
+    border-color: var(--red);
+    background: var(--red-tint);
+  }
+  .form__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+  }
+  .form__status {
+    flex: 1 1 16rem;
+    font-weight: 550;
+  }
+  .form__status[data-state="error"] {
+    color: var(--red-deep);
+  }
+  .form__status[data-state="ok"] {
+    color: #18723f;
+  }
+
+  .details {
+    padding: 2rem;
+    background: var(--concrete);
+    border-radius: var(--radius);
+  }
+  .details ul {
+    margin: 0 0 1.5rem;
+    padding: 0;
+    list-style: none;
+  }
+  .details li {
+    display: flex;
+    gap: 1rem;
+    padding-block: 0.9rem;
+    border-top: 1px solid var(--rule);
+  }
+  .details li:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .details i {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius);
+    background: var(--red);
+    color: var(--white);
+    font-size: 1.2rem;
+  }
+  .details span {
+    display: block;
+    font-size: var(--t-small);
+    color: var(--steel);
+  }
+  .details a,
+  .details address {
+    font-weight: 650;
+    font-style: normal;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+  .details a:hover {
+    color: var(--red);
+  }
+  .details iframe {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border: 0;
+    border-radius: var(--radius);
+  }
+</style>
